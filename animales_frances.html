@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Monde des Animaux - Vocabulaire en Français</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos DUA: Alto contraste, tipografía clara y botones táctiles grandes */
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .btn-dua {
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .btn-dua:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Tarjetas con relieve amigable */
+        .card-animal {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card-animal:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4 md:p-8">
+
+    <!-- Cabecera de la Aplicación -->
+    <header class="w-full max-w-5xl text-center mb-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 md:p-8 rounded-3xl shadow-xl border-4 border-blue-900">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-3 tracking-wide">
+            🦁 Le Monde des Animaux 🐸
+        </h1>
+        <p class="text-xl md:text-2xl font-medium text-blue-100">
+            ¡Descubre los animales en francés, escucha su pronunciación y diviértete con el juego!
+        </p>
+        
+        <!-- Pestañas de Navegación -->
+        <div class="flex flex-wrap justify-center gap-4 mt-6">
+            <button onclick="cambiarSeccion('explorar')" id="tab-explorar" class="btn-dua bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xl py-3 px-6 rounded-2xl border-b-6 border-amber-700 shadow-md flex items-center gap-2">
+                <span>📚</span> Explorar Familias
+            </button>
+            <button onclick="cambiarSeccion('juego')" id="tab-juego" class="btn-dua bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-extrabold text-xl py-3 px-6 rounded-2xl border-b-6 border-emerald-700 shadow-md flex items-center gap-2">
+                <span>🎮</span> Minijuego De Adivinar
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="w-full max-w-5xl">
+
+        <!-- SECCIÓN 1: EXPLORAR FAMILIAS -->
+        <section id="seccion-explorar" class="fade-in space-y-8">
+            
+            <!-- Filtro de Familias -->
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="filtrarFamilia('todos')" class="btn-filtro bg-slate-800 text-white font-bold py-2 px-5 rounded-xl text-lg shadow">Todos 🌍</button>
+                <button onclick="filtrarFamilia('granja')" class="btn-filtro bg-amber-100 hover:bg-amber-200 text-amber-900 border-2 border-amber-400 font-bold py-2 px-5 rounded-xl text-lg shadow">La Ferme 🐮</button>
+                <button onclick="filtrarFamilia('bosque')" class="btn-filtro bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border-2 border-emerald-400 font-bold py-2 px-5 rounded-xl text-lg shadow">La Forêt 🌲</button>
+                <button onclick="filtrarFamilia('sabana')" class="btn-filtro bg-orange-100 hover:bg-orange-200 text-orange-900 border-2 border-orange-400 font-bold py-2 px-5 rounded-xl text-lg shadow">La Savane 🦁</button>
+                <button onclick="filtrarFamilia('agua')" class="btn-filtro bg-cyan-100 hover:bg-cyan-200 text-cyan-900 border-2 border-cyan-400 font-bold py-2 px-5 rounded-xl text-lg shadow">L'Eau 🐟</button>
+            </div>
+
+            <!-- Grid de Tarjetas de Animales -->
+            <div id="grid-animales" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Se generan dinámicamente desde JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: MINIJUEGO INTERACTIVO -->
+        <section id="seccion-juego" class="hidden fade-in bg-white rounded-3xl shadow-2xl p-6 md:p-10 border-4 border-slate-800">
+            
+            <!-- Pantalla de Inicio del Juego -->
+            <div id="juego-inicio" class="text-center py-6">
+                <div class="text-6xl mb-4 animate-bounce">🎯</div>
+                <h2 class="text-3xl md:text-4xl font-black mb-4 text-slate-900">¡El Desafío de los Animales!</h2>
+                <p class="text-2xl mb-8 font-medium text-slate-600">
+                    Pon a prueba tu oído y memoria adivinando el animal correcto en francés según la pista.
+                </p>
+                <button onclick="iniciarJuego()" class="btn-dua bg-amber-400 hover:bg-amber-300 border-b-8 border-amber-600 text-slate-900 text-3xl font-extrabold py-5 px-10 rounded-2xl shadow-lg">
+                    🚀 ¡EMPEZAR A JUGAR!
+                </button>
+            </div>
+
+            <!-- Pantalla de Preguntas del Juego -->
+            <div id="juego-preguntas" class="hidden">
+                <div class="flex justify-between items-center mb-6 border-b-4 border-slate-200 pb-4">
+                    <span class="text-2xl font-bold text-slate-700">Paso <span id="current-step">1</span> de <span id="total-steps">5</span></span>
+                    <span class="text-2xl font-bold bg-slate-900 text-white px-4 py-1 rounded-xl">⭐ Puntos: <span id="score">0</span></span>
+                </div>
+
+                <div class="text-center mb-8">
+                    <p id="pregunta-contexto" class="text-2xl text-slate-600 font-semibold mb-2"></p>
+                    <div id="pregunta-icono" class="text-7xl md:text-8xl my-4">❓</div>
+                    <h3 id="pregunta-texto" class="text-3xl md:text-4xl font-extrabold text-blue-900 bg-blue-50 p-6 rounded-2xl border-4 border-blue-200"></h3>
+                </div>
+
+                <!-- Botones de Opciones -->
+                <div id="opciones-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <!-- Opciones inyectadas por JS -->
+                </div>
+
+                <!-- Feedback Visual -->
+                <div id="feedback-juego" class="hidden rounded-2xl p-4 mb-6 text-center border-4">
+                    <p id="feedback-texto" class="text-2xl font-extrabold flex items-center justify-center gap-3"></p>
+                </div>
+
+                <!-- Botón Siguiente -->
+                <button id="btn-siguiente" onclick="siguientePregunta()" class="hidden btn-dua w-full bg-slate-900 hover:bg-slate-800 text-white text-2xl font-bold py-4 rounded-2xl shadow-lg border-b-6 border-slate-950">
+                    Siguiente Pregunta ⏭️
+                </button>
+            </div>
+
+            <!-- Pantalla de Resultados del Juego -->
+            <div id="juego-resultados" class="hidden text-center py-6">
+                <h2 class="text-4xl md:text-5xl font-black mb-4 text-slate-900">🏆 ¡Partie Terminée!</h2>
+                <p class="text-2xl mb-6 font-medium">Has completado el desafío con éxito.</p>
+                <div class="inline-block bg-amber-300 border-4 border-slate-900 rounded-full w-36 h-36 flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <span class="text-5xl font-black text-slate-950" id="final-score">0</span>
+                </div>
+                <p id="mensaje-final" class="text-2xl font-bold mb-8 text-slate-700"></p>
+                <button onclick="reiniciarJuego()" class="btn-dua bg-emerald-500 hover:bg-emerald-400 border-b-8 border-emerald-700 text-slate-900 text-3xl font-extrabold py-4 px-8 rounded-2xl shadow-lg">
+                    🔄 JUGAR OTRA VEZ
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Script principal con lógica de la aplicación -->
+    <script>
+        const animalesData = [
+            { id: 1, nombre: "Le vaches / La vache", articulo: "la", palabra: "vache", emoji: "🐮", familia: "granja", desc: "Da leche fresca y dice 'Mú'." },
+            { id: 2, nombre: "Le cochon", articulo: "le", palabra: "cochon", emoji: "🐷", familia: "granja", desc: "Vive en el lodo y dice 'Oink'." },
+            { id: 3, nombre: "Le coq / La poule", articulo: "la", palabra: "poule", emoji: "🐔", familia: "granja", desc: "Pone huevos y despierta por la mañana." },
+            { id: 4, nombre: "Le mouton", articulo: "le", palabra: "mouton", emoji: "🐑", familia: "granja", desc: "Tiene lana suave y blanca." },
+            
+            { id: 5, nombre: "Le lion", articulo: "le", palabra: "lion", emoji: "🦁", familia: "savana", desc: "Es el rey de la selva y ruge fuerte." },
+            { id: 6, nombre: "L'éléphant", articulo: "l'", palabra: "éléphant", emoji: "🐘", familia: "savana", desc: "Animal gigante con trompa larga y orejas grandes." },
+            { id: 7, nombre: "Le singe", articulo: "le", palabra: "singe", emoji: "🐒", familia: "savana", desc: "Le encantan los plátanos y trepar por los árboles." },
+            { id: 8, nombre: "La girafe", articulo: "la", palabra: "girafe", emoji: "🦒", familia: "savana", desc: "Tiene el cuello muy largo para alcanzar las hojas altas." },
+
+            { id: 9, nombre: "Le renard", articulo: "le", palabra: "renard", emoji: "🦊", familia: "bosque", desc: "Astuto, de pelo rojizo y cola peluda." },
+            { id: 10, nombre: "L'ours", articulo: "l'", palabra: "ours", emoji: "🐻", familia: "bosque", desc: "Grande, fuerte y le encanta la miel." },
+            { id: 11, nombre: "Le loup", articulo: "le", palabra: "loup", emoji: "🐺", familia: "bosque", desc: "Aúlla bajo la luz de la luna llena." },
+            { id: 12, nombre: "Le hibou", articulo: "le", palabra: "hibou", emoji: "🦉", familia: "bosque", desc: "Ave nocturna con ojos grandes que ve en la oscuridad." },
+
+            { id: 13, nombre: "Le poisson", articulo: "le", palabra: "poisson", emoji: "🐟", familia: "agua", desc: "Vive bajo el agua y nada con aletas." },
+            { id: 14, nombre: "La grenouille", articulo: "la", palabra: "grenouille", emoji: "🐸", familia: "agua", desc: "Verde, salta en charcos y dice 'Croac'." },
+            { id: 15, nombre: "Le canard", articulo: "le", palabra: "canard", emoji: "🦆", familia: "agua", desc: "Nade en el estanque y hace 'Cuac, cuac'." },
+            { id: 16, nombre: "Le dauphin", articulo: "le", palabra: "dauphin", emoji: "🐬", familia: "agua", desc: "Mamífero marino muy inteligente y juguetón." }
+        ];
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'click') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.08);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'success') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(350, audioCtx.currentTime);
+                oscillator.frequency.setValueAtTime(550, audioCtx.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(750, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.35);
+            } else if (type === 'error') {
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(250, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.25);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.25);
+            }
+        }
+
+        function hablarFrances(texto) {
+            playSound('click');
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Cancelar voces anteriores
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.85; // Un poco más lento para facilitar el aprendizaje infantil
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("La síntesis de voz no es compatible con este navegador.");
+            }
+        }
+
+        function renderizarAnimales(filtro = 'todos') {
+            const grid = document.getElementById('grid-animales');
+            grid.innerHTML = '';
+
+            const filtrados = filtro === 'todos' 
+                ? animalesData 
+                : animalesData.filter(a => a.familia === filtro);
+
+            filtrados.forEach(animal => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = "card-animal bg-white border-4 border-slate-300 rounded-3xl p-6 flex flex-col items-center justify-between shadow-md text-center";
+                
+                tarjeta.innerHTML = `
+                    <div class="text-7xl mb-3">${animal.emoji}</div>
+                    <h3 class="text-2xl font-extrabold text-slate-800 mb-1">${animal.nombre}</h3>
+                    <span class="text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-600 py-1 px-3 rounded-full mb-3">${animal.familia}</span>
+                    <p class="text-slate-600 text-base mb-6 font-medium">${animal.desc}</p>
+                    <button onclick="hablarFrances('${animal.palabra}')" class="btn-dua w-full bg-blue-500 hover:bg-blue-400 text-white font-bold text-lg py-3 px-4 rounded-2xl shadow flex items-center justify-center gap-2 border-b-4 border-blue-700">
+                        <span>🔊</span> Escuchar en Francés
+                    </button>
+                `;
+                grid.appendChild(tarjeta);
+            });
+        }
+
+        function filtrarFamilia(familia) {
+            playSound('click');
+            renderizarAnimales(familia);
+        }
+
+        function cambiarSeccion(seccion) {
+            playSound('click');
+            const exp = document.getElementById('seccion-explorar');
+            const jue = document.getElementById('seccion-juego');
+            const tabExp = document.getElementById('tab-explorar');
+            const tabJue = document.getElementById('tab-juego');
+
+            if (seccion === 'explorar') {
+                exp.classList.remove('hidden');
+                jue.classList.add('hidden');
+                tabExp.className = "btn-dua bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xl py-3 px-6 rounded-2xl border-b-6 border-amber-700 shadow-md flex items-center gap-2";
+                tabJue.className = "btn-dua bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-xl py-3 px-6 rounded-2xl border-b-6 border-slate-400 shadow-md flex items-center gap-2";
+            } else {
+                exp.classList.add('hidden');
+                jue.classList.remove('hidden');
+                tabJue.className = "btn-dua bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xl py-3 px-6 rounded-2xl border-b-6 border-amber-700 shadow-md flex items-center gap-2";
+                tabExp.className = "btn-dua bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-xl py-3 px-6 rounded-2xl border-b-6 border-slate-400 shadow-md flex items-center gap-2";
+            }
+        }
+
+        let preguntasJuego = [];
+        let indicePregunta = 0;
+        let puntuacionJuego = 0;
+
+        function iniciarJuego() {
+            playSound('click');
+            // Seleccionar 5 animales aleatorios para el juego
+            const mezcla = [...animailesBarajados = animalesData].sort(() => 0.5 - Math.random());
+            preguntasJuego = mezcla.slice(0, 5);
+            indicePregunta = 0;
+            puntuacionJuego = 0;
+
+            document.getElementById('juego-inicio').classList.add('hidden');
+            document.getElementById('juego-resultados').classList.add('hidden');
+            document.getElementById('juego-preguntas').classList.remove('hidden');
+
+            document.getElementById('total-steps').textContent = preguntasJuego.length;
+            actualizarPuntuacionUI();
+            cargarPreguntaJuego();
+        }
+
+        function cargarPreguntaJuego() {
+            const actual = preguntasJuego[indicePregunta];
+            document.getElementById('current-step').textContent = indicePregunta + 1;
+            document.getElementById('pregunta-contexto').textContent = `¿Qué animal es en francés?`;
+            document.getElementById('pregunta-icono').textContent = actual.emoji;
+            document.getElementById('pregunta-texto').textContent = `Pista: "${actual.desc}"`;
+
+            document.getElementById('feedback-juego').classList.add('hidden');
+            document.getElementById('btn-siguiente').classList.add('hidden');
+
+            // Generar opciones (la correcta + 3 incorrectas aleatorias)
+            const incorrectas = animalesData.filter(a => a.id !== actual.id).sort(() => 0.5 - Math.random()).slice(0, 3);
+            const opciones = [actual, ...incorrectas].sort(() => 0.5 - Math.random());
+
+            const container = document.getElementById('opciones-container');
+            container.innerHTML = '';
+
+            opciones.forEach(op => {
+                const btn = document.createElement('button');
+                btn.className = "btn-dua w-full bg-white border-4 border-slate-300 hover:border-slate-800 text-slate-800 text-2xl font-bold py-5 px-4 rounded-2xl shadow transition flex items-center justify-center gap-3";
+                btn.innerHTML = `<span class="text-3xl">${op.emoji}</span> <span>${op.nombre}</span>`;
+                btn.onclick = () => verificarRespuestaJuego(op.id === actual.id, btn, actual.palabra);
+                container.appendChild(btn);
+            });
+        }
+
+        function verificarRespuestaJuego(esCorrecto, btnSeleccionado, palabraFrances) {
+            const botones = document.getElementById('opciones-container').querySelectorAll('button');
+            botones.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('feedback-juego');
+            const feedbackTexto = document.getElementById('feedback-texto');
+            feedback.classList.remove('hidden');
+
+            // Pronunciar la palabra al responder
+            hablarFrances(palabraFrances);
+
+            if (esCorrecto) {
+                puntuacionJuego += 20;
+                actualizarPuntuacionUI();
+                playSound('success');
+                btnSeleccionado.className = "btn-dua w-full bg-emerald-100 border-4 border-emerald-600 text-emerald-900 text-2xl font-bold py-5 px-4 rounded-2xl shadow flex items-center justify-center gap-3";
+                feedback.className = "rounded-2xl p-4 mb-6 text-center border-4 border-emerald-500 bg-emerald-50";
+                feedbackTexto.innerHTML = "<span>✅</span> ¡Bravo! C'est correct ! (+20 pts)";
+            } else {
+                playSound('error');
+                btnSeleccionado.className = "btn-dua w-full bg-red-100 border-4 border-red-600 text-red-900 text-2xl font-bold py-5 px-4 rounded-2xl shadow flex items-center justify-center gap-3";
+                feedback.className = "rounded-2xl p-4 mb-6 text-center border-4 border-red-500 bg-red-50";
+                feedbackTexto.innerHTML = "<span>❌</span> Oups ! Intenta de nuevo en la próxima.";
+            }
+
+            document.getElementById('btn-siguiente').classList.remove('hidden');
+        }
+
+        function siguientePregunta() {
+            playSound('click');
+            indicePregunta++;
+            if (indicePregunta < preguntasJuego.length) {
+                cargarPreguntaJuego();
+            } else {
+                mostrarResultadosJuego();
+            }
+        }
+
+        function mostrarResultadosJuego() {
+            document.getElementById('juego-preguntas').classList.add('hidden');
+            document.getElementById('juego-resultados').classList.remove('hidden');
+            document.getElementById('final-score').textContent = puntuacionJuego;
+
+            const mensaje = document.getElementById('mensaje-final');
+            if (puntuacionJuego === 100) {
+                mensaje.textContent = "🏆 ¡Parfait! ¡Eres un experto absoluto en los animales en francés!";
+            } else if (puntuacionJuego >= 60) {
+                mensaje.textContent = "👍 ¡Très bien! Has hecho un gran trabajo.";
+            } else {
+                mensaje.textContent = "💪 ¡Courage! Repasa las familias y vuelve a intentarlo.";
+            }
+        }
+
+        function reiniciarJuego() {
+            iniciarJuego();
+        }
+
+        function actualizarPuntuacionUI() {
+            document.getElementById('score').textContent = puntuacionJuego;
+        }
+
+        // Inicializar la aplicación al cargar la página
+        window.onload = function() {
+            renderizarAnimales('todos');
+        };
+    </script>
+</body>
+</html>
